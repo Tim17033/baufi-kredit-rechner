@@ -105,3 +105,7 @@ if kreditbetrag and laufzeit and kapitaldienst and st.button("📊 Berechnung st
     ax.set_ylabel("Betrag (€)", fontsize=12)
     ax.legend()
     st.pyplot(fig)
+
+else:
+    st.markdown("### ℹ️ Bitte geben Sie alle notwendigen Informationen ein und klicken Sie auf 'Berechnung starten'.")
+
