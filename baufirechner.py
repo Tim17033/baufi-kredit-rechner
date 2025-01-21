@@ -32,8 +32,10 @@ def calculate_zins_tilgung(kreditbetrag, zinssatz, laufzeit, monatliche_rate):
 
 # Berechnung des anfänglichen Tilgungssatzes
 def calculate_initial_tilgungssatz(kreditbetrag, monatliche_rate, zinssatz):
-    anf_tilgung = monatliche_rate - (kreditbetrag * (zinssatz / 12))  # Anfangstilgung
-    return (anf_tilgung / kreditbetrag) * 100  # Umwandlung in %
+    erste_monatszinsen = kreditbetrag * (zinssatz / 12)  # Zinsen der ersten Monatsrate
+    erste_monatstilgung = monatliche_rate - erste_monatszinsen  # Tilgung der ersten Monatsrate
+    erste_jahrestilgung = erste_monatstilgung * 12  # Tilgung auf das Jahr hochgerechnet
+    return (erste_jahrestilgung / kreditbetrag) * 100  # Tilgungssatz in %
 
 # Interaktive Eingaben
 st.title("🏡 Baufinanzierungsrechner")
@@ -77,7 +79,7 @@ if kreditbetrag and laufzeit and kapitaldienst and st.button("📊 Berechnung st
 
         ### 🔍 Zinssatz
         **{zinssatz * 100:.2f}%**
-        *Der zufällig generierte Zinssatz für Ihr Baufinanzierungsdarlehen.*
+        *Der Zinssatz entspricht Ihrer Bonität, Ihrem Eigenkapital und weiteren Faktoren.*
 
         ### 🧮 Anfänglicher Tilgungssatz
         **{anf_tilgungssatz:.2f}%**
@@ -103,4 +105,3 @@ if kreditbetrag and laufzeit and kapitaldienst and st.button("📊 Berechnung st
     ax.set_ylabel("Betrag (€)", fontsize=12)
     ax.legend()
     st.pyplot(fig)
-
