@@ -43,13 +43,11 @@ st.markdown("Berechnen Sie Ihre optimale monatliche Rate und gewinnen Sie einen 
 
 # Schritt 1: Finanzierungsbedarf eingeben
 st.markdown("### 🛠️ Schritt 1: Finanzierungsbedarf eingeben")
-kreditbetrag = st.number_input("💰 Finanzierungsbedarf (€):", min_value=10000.0, max_value=1000000.0, step=1000.0, format="%.2f")
+kreditbetrag = st.number_input("💰 Finanzierungsbedarf (€):", min_value=10000, max_value=1000000, step=1000, format="%.2f")
 
-# Schritt 2: Laufzeit eingeben
 st.markdown("### 🛠️ Schritt 2: Laufzeit eingeben")
 laufzeit = st.number_input("⏳ Gewünschte Laufzeit (in Jahren):", min_value=5, max_value=40, step=1)
 
-# Schritt 3: Kapitaldienst eingeben
 st.markdown("### 🛠️ Schritt 3: Kapitaldienst eingeben")
 kapitaldienst = st.number_input("🏦 Aktueller Kapitaldienst (€):", min_value=0.0, step=100.0, format="%.2f")
 
@@ -62,6 +60,19 @@ if st.button("📊 Berechnung starten"):
         zinssatz = get_random_interest_rate()
         monatliche_rate = calculate_monthly_rate(kreditbetrag, zinssatz, laufzeit)
 
+        # Laufzeit anpassen, falls Kapitaldienst nicht ausreicht
+        original_laufzeit = laufzeit
+        while monatliche_rate > kapitaldienst and laufzeit < 40:
+            laufzeit += 1
+            monatliche_rate = calculate_monthly_rate(kreditbetrag, zinssatz, laufzeit)
+
+        if monatliche_rate > kapitaldienst:
+            st.error("❌ Selbst bei einer Laufzeit von 40 Jahren passt die Rate nicht in den Kapitaldienst.")
+        elif laufzeit > original_laufzeit:
+            st.markdown(
+                f"⚠️ **Die Laufzeit wurde auf {laufzeit} Jahre verlängert, um die monatliche Rate an den Kapitaldienst anzupassen.**"
+            )
+
         # Berechnung von Zins- und Tilgungsanteilen
         zins_anteile, tilgungs_anteile = calculate_zins_tilgung(kreditbetrag, zinssatz, laufzeit, monatliche_rate)
         gesamtzins = sum(zins_anteile)
@@ -69,17 +80,6 @@ if st.button("📊 Berechnung starten"):
 
         # Anfänglicher Tilgungssatz
         anf_tilgungssatz = calculate_initial_tilgungssatz(kreditbetrag, monatliche_rate, zinssatz)
-
-        # Wenn die Rate nicht in den Kapitaldienst passt, Vorschlag für verlängerte Laufzeit
-        if monatliche_rate > kapitaldienst:
-            original_laufzeit = laufzeit
-            while monatliche_rate > kapitaldienst and laufzeit < 40:
-                laufzeit += 1
-                monatliche_rate = calculate_monthly_rate(kreditbetrag, zinssatz, laufzeit)
-            if monatliche_rate > kapitaldienst:
-                st.error("❌ Selbst bei einer Laufzeit von 40 Jahren passt die Rate nicht in den Kapitaldienst.")
-            else:
-                st.warning(f"⚠️ Die gewünschte Laufzeit wurde auf **{laufzeit} Jahre** verlängert, damit die monatliche Rate in den Kapitaldienst passt.")
 
         # Ergebnisse anzeigen
         st.markdown("## 📋 Ergebnisse")
@@ -106,19 +106,9 @@ if st.button("📊 Berechnung starten"):
             *Die Gesamtsumme aller Zahlungen während der Laufzeit.*
             """
         )
-
-        # Visualisierung: Zins- und Tilgungsanteile
-        fig, ax = plt.subplots(figsize=(10, 4))
-        x = np.arange(1, len(zins_anteile) + 1)  # Monate der Laufzeit
-        ax.bar(x, zins_anteile, label="Zinsen", color="gray", alpha=0.7)
-        ax.bar(x, tilgungs_anteile, bottom=zins_anteile, label="Tilgung", color="orange", alpha=0.9)
-        ax.set_title("Zins- und Tilgungsanteile über die gesamte Laufzeit", fontsize=14)
-        ax.set_xlabel("Monat", fontsize=12)
-        ax.set_ylabel("Betrag (€)", fontsize=12)
-        ax.legend()
-        st.pyplot(fig)
     else:
         st.error("❌ Bitte geben Sie alle notwendigen Informationen ein, bevor Sie die Berechnung starten.")
+
 
 
 
