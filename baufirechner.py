@@ -30,6 +30,11 @@ def calculate_zins_tilgung(kreditbetrag, zinssatz, laufzeit, monatliche_rate):
 
     return zins_anteile, tilgungs_anteile
 
+# Berechnung des anfänglichen Tilgungssatzes
+def calculate_initial_tilgungssatz(kreditbetrag, monatliche_rate, zinssatz):
+    anf_tilgung = monatliche_rate - (kreditbetrag * (zinssatz / 12))  # Anfangstilgung
+    return (anf_tilgung / kreditbetrag) * 100  # Umwandlung in %
+
 # Interaktive Eingaben
 st.title("🏡 Baufinanzierungsrechner")
 st.markdown("Berechnen Sie Ihre optimale monatliche Rate und gewinnen Sie einen Überblick über die Zinskosten! 📈")
@@ -46,10 +51,6 @@ if kreditbetrag and laufzeit:
     st.markdown("### 🛠️ Schritt 3: Kapitaldienst eingeben")
     kapitaldienst = st.number_input("🏦 Aktueller Kapitaldienst (€):", min_value=0.0, step=100.0)
 
-if kreditbetrag and laufzeit and kapitaldienst:
-    st.markdown("### 🛠️ Schritt 4: Möchten Sie eine Restkreditversicherung (RKV) hinzufügen?")
-    rkv_option = st.radio("🔒 RKV-Option:", options=["Ja", "Nein"])
-
 # Berechnung erst starten, wenn alle Eingaben abgeschlossen sind
 if kreditbetrag and laufzeit and kapitaldienst and st.button("📊 Berechnung starten"):
     with st.spinner("🔄 Berechnung wird durchgeführt..."):
@@ -63,21 +64,24 @@ if kreditbetrag and laufzeit and kapitaldienst and st.button("📊 Berechnung st
     gesamtzins = sum(zins_anteile)
     gesamtaufwand = gesamtzins + kreditbetrag
 
+    # Anfänglicher Tilgungssatz
+    anf_tilgungssatz = calculate_initial_tilgungssatz(kreditbetrag, monatliche_rate, zinssatz)
+
     # Ergebnisse anzeigen
     st.markdown("## 📋 Ergebnisse")
     st.markdown(
         f"""
-        ### 💵 Monatliche Rate (ohne RKV)
+        ### 💵 Monatliche Rate
         **{monatliche_rate:,.2f} €**
-        *Der Betrag, den Sie monatlich ohne zusätzliche Absicherung zahlen würden.*
-
-        ### 🔒 Monatliche Rate (mit Restkreditversicherung)
-        **{(monatliche_rate + kreditbetrag * 0.00273):,.2f} €**
-        *Mit zusätzlicher Absicherung (RKV) erhöht sich die monatliche Rate leicht.*
+        *Der Betrag, den Sie monatlich zahlen würden.*
 
         ### 🔍 Zinssatz
         **{zinssatz * 100:.2f}%**
         *Der zufällig generierte Zinssatz für Ihr Baufinanzierungsdarlehen.*
+
+        ### 🧮 Anfänglicher Tilgungssatz
+        **{anf_tilgungssatz:.2f}%**
+        *Der prozentuale Anteil der Tilgung im ersten Jahr.*
 
         ### 📉 Gesamter Zinsaufwand
         **{gesamtzins:,.2f} €**
