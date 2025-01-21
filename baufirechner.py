@@ -6,7 +6,7 @@ import time
 
 # Generiere Zinssatz zufällig zwischen 3,1% und 3,5%
 def get_random_interest_rate():
-    return round(random.uniform(3.1, 3.3), 2) / 100  # Umwandlung in Dezimalform
+    return round(random.uniform(3.5, 3.5), 2) / 100  # Umwandlung in Dezimalform
 
 # Berechnung der monatlichen Rate (Annuität)
 def calculate_monthly_rate(kreditbetrag, zinssatz, laufzeit):
