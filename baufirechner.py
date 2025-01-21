@@ -43,13 +43,13 @@ st.markdown("Berechnen Sie Ihre optimale monatliche Rate und gewinnen Sie einen 
 
 # Schritt 1: Finanzierungsbedarf eingeben
 st.markdown("### 🛠️ Schritt 1: Finanzierungsbedarf eingeben")
-kreditbetrag = float(st.number_input("💰 Finanzierungsbedarf (€):", min_value=10000, max_value=1000000, step=1000, format="%.2f"))
+kreditbetrag = st.number_input("💰 Finanzierungsbedarf (€):", min_value=10000, max_value=1000000, step=1000, format="%.2f")
 
 st.markdown("### 🛠️ Schritt 2: Laufzeit eingeben")
 laufzeit = st.number_input("⏳ Gewünschte Laufzeit (in Jahren):", min_value=5, max_value=40, step=1)
 
 st.markdown("### 🛠️ Schritt 3: Kapitaldienst eingeben")
-kapitaldienst = float(st.number_input("🏦 Aktueller Kapitaldienst (€):", min_value=0.0, step=100.0, format="%.2f"))
+kapitaldienst = st.number_input("🏦 Aktueller Kapitaldienst (€):", min_value=0.0, step=100.0, format="%.2f")
 
 # Berechnung starten Button immer anzeigen
 if st.button("📊 Berechnung starten"):
@@ -106,6 +106,7 @@ if st.button("📊 Berechnung starten"):
         st.pyplot(fig)
     else:
         st.error("❌ Bitte geben Sie alle notwendigen Informationen ein, bevor Sie die Berechnung starten.")
+
 
 
 
