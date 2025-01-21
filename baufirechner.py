@@ -108,3 +108,4 @@ if st.button("📊 Berechnung starten"):
         st.error("❌ Bitte geben Sie alle notwendigen Informationen ein, bevor Sie die Berechnung starten.")
 
 
+
