@@ -43,22 +43,15 @@ st.markdown("Berechnen Sie Ihre optimale monatliche Rate und gewinnen Sie einen 
 
 # Schritt 1: Finanzierungsbedarf eingeben
 st.markdown("### 🛠️ Schritt 1: Finanzierungsbedarf eingeben")
-kreditbetrag = float(
-    st.number_input("💰 Finanzierungsbedarf (€):", min_value=10000.0, max_value=1000000.0, step=1000.0, format="%.2f")
-)
+kreditbetrag = st.number_input("💰 Finanzierungsbedarf (€):", min_value=10000.0, max_value=1000000.0, step=1000.0, format="%.2f")
 
 # Schritt 2: Laufzeit eingeben
 st.markdown("### 🛠️ Schritt 2: Laufzeit eingeben")
-laufzeit = int(
-    st.number_input("⏳ Gewünschte Laufzeit (in Jahren):", min_value=5, max_value=40, step=1)
-)
+laufzeit = st.number_input("⏳ Gewünschte Laufzeit (in Jahren):", min_value=5, max_value=40, step=1)
 
 # Schritt 3: Kapitaldienst eingeben
 st.markdown("### 🛠️ Schritt 3: Kapitaldienst eingeben")
-kapitaldienst = float(
-    st.number_input("🏦 Aktueller Kapitaldienst (€):", min_value=0.0, step=100.0, format="%.2f")
-)
-
+kapitaldienst = st.number_input("🏦 Aktueller Kapitaldienst (€):", min_value=0.0, step=100.0, format="%.2f")
 
 # Berechnung starten Button immer anzeigen
 if st.button("📊 Berechnung starten"):
@@ -76,6 +69,17 @@ if st.button("📊 Berechnung starten"):
 
         # Anfänglicher Tilgungssatz
         anf_tilgungssatz = calculate_initial_tilgungssatz(kreditbetrag, monatliche_rate, zinssatz)
+
+        # Wenn die Rate nicht in den Kapitaldienst passt, Vorschlag für verlängerte Laufzeit
+        if monatliche_rate > kapitaldienst:
+            original_laufzeit = laufzeit
+            while monatliche_rate > kapitaldienst and laufzeit < 40:
+                laufzeit += 1
+                monatliche_rate = calculate_monthly_rate(kreditbetrag, zinssatz, laufzeit)
+            if monatliche_rate > kapitaldienst:
+                st.error("❌ Selbst bei einer Laufzeit von 40 Jahren passt die Rate nicht in den Kapitaldienst.")
+            else:
+                st.warning(f"⚠️ Die gewünschte Laufzeit wurde auf **{laufzeit} Jahre** verlängert, damit die monatliche Rate in den Kapitaldienst passt.")
 
         # Ergebnisse anzeigen
         st.markdown("## 📋 Ergebnisse")
@@ -115,6 +119,7 @@ if st.button("📊 Berechnung starten"):
         st.pyplot(fig)
     else:
         st.error("❌ Bitte geben Sie alle notwendigen Informationen ein, bevor Sie die Berechnung starten.")
+
 
 
 
